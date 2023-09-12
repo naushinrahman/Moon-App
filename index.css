@@ -1,0 +1,11 @@
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+body {
+    margin-left: 10rem;
+    margin-right: 10rem;
+    background-color: rgb(3, 3, 73);
+    color: white;
+}
