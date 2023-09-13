@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moon Phase App</title>
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Moon Phase App</h1>
-    <form id="moonForm">
-        <fieldset>
-            <label>City</label>
-            <input id="city" type="text">
-            <label>Date</label>
-            <input id="date" type="date" required>
-            <br>
-            <button type="submit">Generate</button>
-        </fieldset>
-    </form>
-    <div id="moon-phase"></div>
+    <div id="container">
+        <h1>The moon over Toronto tonight</h1>
+        <div id="moon-phase"></div>
+        <form id="moonForm">
+            <fieldset>
+                <label>City</label>
+                <input id="city" type="text">
+                <br>
+                <label>Date</label>
+                <input id="date" type="date" required>
+                <br>
+                <button type="submit">Generate</button>
+            </fieldset>
+        </form>
+    </div>
     <script src="index.js"></script>
 </body>
 </html>
