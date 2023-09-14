@@ -11,3 +11,20 @@ body {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+.moonBox  {
+    width: 15rem;
+    height: 20rem;
+    border-color: aqua;
+    border-radius: 15px;
+    border-style: solid;
+    display: inline-flex;
+    margin: 1.0rem;
+    justify-content: space-between;
+
+} 
+
+.moon-phase {
+    display: flex;
+}
+

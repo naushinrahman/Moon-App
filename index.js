@@ -39,7 +39,7 @@ var origData = {
     "moonStyle": "default",
     "backgroundStyle": "stars",
       "backgroundColor": "blue",
-      "headingColor": "white",
+      "headingColor": "black",
       "textColor": "white"
     },
     "observer": {
@@ -52,6 +52,26 @@ var origData = {
     "orientation": "north-up"
   }
 }
+
+document.addEventListener('DOMContentLoaded', async function () {
+
+  // Get the user's location and set it in origData
+  getLatLon();
+
+  // Define an array of date offsets
+  const dateOffsets = [-2, -1, 0, 1, 2];
+
+  // Load moon phases for each date offset
+  dateOffsets.forEach(async (offset) => {
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + offset);
+    origData.observer.date = currentDate.toISOString().split('T')[0];
+
+    // Load moon phases for this date
+    await moonRequest(origData);
+  });
+});
+
 
 function getLatLon() {
   const locationInput = document.getElementById('city').value;
@@ -78,15 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function handleSubmit(event) {
-  
-  const dateInput = document.getElementById('date').value;
-  
-  // Create a data object with the user input
-  origData.observer.date = dateInput;
-  getLatLon();
   event.preventDefault();
-
-  moonRequest(origData);
 }
 
 const appID = "96b04335-8a59-44f3-80ba-5f79d6b5bdb2";
@@ -100,60 +112,33 @@ const headers = new Headers({
   'Content-Type': 'application/json',
 });
 
-function moonRequest(data) {
-  
+async function moonRequest(data) {
   const fetchOptions = {
-    method: 'POST', // HTTP method 
+    method: 'POST', // HTTP method
     headers: headers,
     body: JSON.stringify(data),
   };
-  
-  fetch(apiUrl, fetchOptions)
-  .then(response => {
+
+  try {
+    const response = await fetch(apiUrl, fetchOptions);
+
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    return response.json(); // Parse the response as JSON
-  })
-  .then(data => {
-    console.log(data);
-    let moonpic = document.createElement("img");
-    moonpic.src = data.data.imageUrl;
+
+    const responseData = await response.json();
+
+    console.log(responseData);
+    let moonDiv = document.createElement("div");
+    moonDiv.classList.add('moonBox');
     var moonPhase = document.querySelector('#moon-phase');
-    moonpic.style.width = '15rem';
-    moonpic.style.height = '20rem';
-    moonPhase.appendChild(moonpic);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });   
+    moonPhase.appendChild(moonDiv);
+    let moonPic = document.createElement("img");
+    moonPic.src = responseData.data.imageUrl;
+    moonDiv.appendChild(moonPic);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
-function defaultMoons(data) {
-  const today = new Date();
-
-  const previous2 = new Date(today);
-  previous2.setDate(previous2.getDate() - 2);
-  origData.observer.date = previous2;
-  moonRequest(data);
-
-  const previous1 = new Date(today);
-  previous1.setDate(previous1.getDate() - 1);
-  origData.observer.date = previous1;
-  moonRequest(data);
-
-  origData.observer.date = today;
-  moonRequest(data);
-
-  const next1 = new Date(today);
-  next1.setDate(next1.getDate() + 1);
-  origData.observer.date = next1;
-  moonRequest(data);
-
-  const next2 = new Date(today);
-  next2.setDate(next2.getDate() + 2);
-  origData.observer.date = next2;
-  moonRequest(data);
-}
-
-window.onload = defaultMoons(origData);
