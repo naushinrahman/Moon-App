@@ -32,6 +32,7 @@
 //   });
 
 let currentDate = new Date();
+var time = currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
 
 var origData = {
   "format": "png",
@@ -53,25 +54,63 @@ var origData = {
   }
 }
 
+var bodiesData = {
+  "latitude": "43.65348",
+  "longitude": "-79.3839347",
+  "elevation": "50",
+  "fromDate": currentDate,
+  "toDate": currentDate,
+  "time": time
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
-
-  // Get the user's location and set it in origData
-  getLatLon();
-
-  // Define an array of date offsets
-  const dateOffsets = [-2, -1, 0, 1, 2];
-
-  // Load moon phases for each date offset
-  dateOffsets.forEach(async (offset) => {
+  
+  var moonTonight = document.querySelector("#tonight-moon");
+  var moonBox1 = document.createElement("div");
+  moonTonight.appendChild(moonBox1);
+  moonBox1.classList.add("moonBox");
+  await moonRequest(origData, moonBox1);
+  
+  //const userLocation = await getUserLocation();
+  const dateOffsets = [1, 2, 3, 4, 5];
+  
+  // Load moon phases for each date offset in order
+  for (const offset of dateOffsets) {
     const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + offset);
-    origData.observer.date = currentDate.toISOString().split('T')[0];
-
-    // Load moon phases for this date
-    await moonRequest(origData);
-  });
+      currentDate.setDate(currentDate.getDate() + offset);
+      origData.observer.date = currentDate.toISOString().split('T')[0];
+      
+      // Load moon phases for this date
+      var moonForecast = document.querySelector("#moon-phase");
+      var moonBox = document.createElement("div");
+      moonForecast.appendChild(moonBox);
+      moonBox.classList.add("moonBox");
+      await moonRequest(origData, moonBox);
+      
+    }
 });
 
+// async function getUserLocation() {
+//   return new Promise((resolve, reject) => {
+//     if ("geolocation" in navigator) {
+//       navigator.geolocation.getCurrentPosition(
+//         (position) => {
+//           resolve({
+//             latitude: position.coords.latitude,
+//             longitude: position.coords.longitude
+//           });
+//         },
+//         (error) => {
+//           console.error('Error getting user location:', error);
+//           reject(null);
+//         }
+//       );
+//     } else {
+//       console.error('Geolocation not supported by the browser');
+//       reject(null);
+//     }
+//   });
+// }
 
 function getLatLon() {
   const locationInput = document.getElementById('city').value;
@@ -105,14 +144,14 @@ const appID = "96b04335-8a59-44f3-80ba-5f79d6b5bdb2";
 const appSecret = "5fa633cf6abeb4329aeec9ac79b07f66e9c5ea082fcaff09ded32495f9ff10512aba0886f81c10bf5fe079c49ebb84590d9661437f5abcac83f9c102085e0e842b53dfa2531b0c75a4df71c307adafdf51e5bf532628459576f05438b93d40a27c85e0aaf2a83d2f559afd0a9d312297";
 const authString = btoa(`${appID}:${appSecret}`);
 
-const apiUrl = 'https://api.astronomyapi.com/api/v2/studio/moon-phase';
 
 const headers = new Headers({
   'Authorization': `Basic ${authString}`,
   'Content-Type': 'application/json',
 });
 
-async function moonRequest(data) {
+async function moonRequest(data, container) {
+  const apiUrl = 'https://api.astronomyapi.com/api/v2/studio/moon-phase';
   const fetchOptions = {
     method: 'POST', // HTTP method
     headers: headers,
@@ -127,18 +166,14 @@ async function moonRequest(data) {
     }
 
     const responseData = await response.json();
-
     console.log(responseData);
-    let moonDiv = document.createElement("div");
-    moonDiv.classList.add('moonBox');
-    var moonPhase = document.querySelector('#moon-phase');
-    moonPhase.appendChild(moonDiv);
     let moonPic = document.createElement("img");
     moonPic.src = responseData.data.imageUrl;
-    moonDiv.appendChild(moonPic);
+    container.appendChild(moonPic);
 
   } catch (error) {
     console.error('Error:', error);
   }
 }
+
 
