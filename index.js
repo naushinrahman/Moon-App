@@ -1,38 +1,4 @@
-// import fetch from 'node-fetch';
-
-// const appID = "96b04335-8a59-44f3-80ba-5f79d6b5bdb2";
-// const appSecret = "5fa633cf6abeb4329aeec9ac79b07f66e9c5ea082fcaff09ded32495f9ff10512aba0886f81c10bf5fe079c49ebb84590d9661437f5abcac83f9c102085e0e842b53dfa2531b0c75a4df71c307adafdf51e5bf532628459576f05438b93d40a27c85e0aaf2a83d2f559afd0a9d312297";
-// const authString = Buffer.from(`${appID}:${appSecret}`).toString('base64');
-
-// const headers = new Headers({
-//   'Authorization': `Basic ${authString}`,
-// });
-
-// const apiUrl = 'https://api.astronomyapi.com/api/v2/';
-
-// const fetchOptions = {
-//   method: 'GET', // HTTP method 
-//   headers: headers,
-// };
-
-// fetch(apiUrl, fetchOptions)
-//   .then(response => {
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-//     return response.json(); // Parse the response as JSON
-//   })
-//   .then(data => {
-    
-//     console.log(data);
-//   })
-//   .catch(error => {
-    
-//     console.error('Error:', error);
-//   });
-
 let currentDate = new Date();
-var time = currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
 
 var origData = {
   "format": "png",
@@ -54,63 +20,68 @@ var origData = {
   }
 }
 
-var bodiesData = {
-  "latitude": "43.65348",
-  "longitude": "-79.3839347",
-  "elevation": "50",
-  "fromDate": currentDate,
-  "toDate": currentDate,
-  "time": time
-}
-
 document.addEventListener('DOMContentLoaded', async function () {
   
+  const form = document.getElementById('moonForm');
+  form.addEventListener('submit', handleSubmit);
+  //const userLocation = await getUserLocation();
+
+  // Update the observer parameters with the user's location
+  // origData.observer.latitude = userLocation.latitude.toFixed(5);
+  // origData.observer.longitude = userLocation.longitude.toFixed(5);
+
   var moonTonight = document.querySelector("#tonight-moon");
   var moonBox1 = document.createElement("div");
   moonTonight.appendChild(moonBox1);
   moonBox1.classList.add("moonBox");
   await moonRequest(origData, moonBox1);
   
-  //const userLocation = await getUserLocation();
+  await next5Nights(currentDate);
+    }
+);
+
+// function getUserLocation() {
+//   return new Promise((resolve, reject) => {
+//     if ("geolocation" in navigator) {
+//       navigator.geolocation.getCurrentPosition(
+//         (position) => {
+//           const latitude = position.coords.latitude;
+//           const longitude = position.coords.longitude;
+//           resolve({ latitude, longitude });
+//         },
+//         (error) => {
+//           reject(error);
+//         }
+//       );
+//     } else {
+//       reject(new Error("Geolocation is not available in this browser."));
+//     }
+//   });
+// }
+
+async function next5Nights(date) {
   const dateOffsets = [1, 2, 3, 4, 5];
   
+  const currentDate = new Date(date);
   // Load moon phases for each date offset in order
   for (const offset of dateOffsets) {
-    const currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() + offset);
-      origData.observer.date = currentDate.toISOString().split('T')[0];
+    const nextDate = new Date(currentDate);
+    
+    // Calculate the next date by adding the offset
+    nextDate.setDate(nextDate.getDate() + offset);
+
+    // Update the observer's date in origData
+    origData.observer.date = nextDate.toISOString().split('T')[0];
       
       // Load moon phases for this date
       var moonForecast = document.querySelector("#moon-phase");
       var moonBox = document.createElement("div");
       moonForecast.appendChild(moonBox);
       moonBox.classList.add("moonBox");
-      await moonRequest(origData, moonBox);
-      
-    }
-});
 
-// async function getUserLocation() {
-//   return new Promise((resolve, reject) => {
-//     if ("geolocation" in navigator) {
-//       navigator.geolocation.getCurrentPosition(
-//         (position) => {
-//           resolve({
-//             latitude: position.coords.latitude,
-//             longitude: position.coords.longitude
-//           });
-//         },
-//         (error) => {
-//           console.error('Error getting user location:', error);
-//           reject(null);
-//         }
-//       );
-//     } else {
-//       console.error('Geolocation not supported by the browser');
-//       reject(null);
-//     }
-//   });
-// }
+    await moonRequest(origData, moonBox);
+  }
+}
 
 function getLatLon() {
   const locationInput = document.getElementById('city').value;
@@ -121,8 +92,13 @@ function getLatLon() {
     try {
       const response = await axios.get(apiUrl);
       console.log(response);
-      origData.observer.latitude = response.data[0].lat.toFixed(5);
-      origData.observer.longitude = response.data[0].lon.toFixed(5);
+
+      const latitude = parseFloat(response.data[0].lat);
+      const longitude = parseFloat(response.data[0].lon);
+
+      origData.observer.latitude = latitude;
+      origData.observer.longitude = longitude;
+
 
     } catch (error) {
       console.error(error);
@@ -131,13 +107,34 @@ function getLatLon() {
   getCoords();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('moonForm');
-  form.addEventListener('submit', handleSubmit);
-});
+function updateObserverDate(date) {
+  origData.observer.date = date;
+}
 
 function handleSubmit(event) {
   event.preventDefault();
+  const dateInput = document.getElementById('date').value; 
+  updateObserverDate(dateInput); 
+  resetMoonDisplay(); 
+  getLatLon();
+
+  var moonTonight = document.querySelector("#tonight-moon");
+  var moonBox1 = document.createElement("div");
+  moonTonight.appendChild(moonBox1);
+  moonBox1.classList.add("moonBox");
+  moonRequest(origData, moonBox1);
+  next5Nights(dateInput);
+}
+
+function resetMoonDisplay() {
+  const moonPhaseContainer = document.querySelector('#moon-phase');
+  const moon1 = document.querySelector('#tonight-moon')
+  while (moonPhaseContainer.firstChild) {
+    moonPhaseContainer.removeChild(moonPhaseContainer.firstChild);
+  }
+  while (moon1.firstChild) {
+    moon1.removeChild(moon1.firstChild);
+  }
 }
 
 const appID = "96b04335-8a59-44f3-80ba-5f79d6b5bdb2";
@@ -175,5 +172,3 @@ async function moonRequest(data, container) {
     console.error('Error:', error);
   }
 }
-
-
