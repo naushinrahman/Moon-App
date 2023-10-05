@@ -1,6 +1,6 @@
 let currentDate = new Date();
 
-var origData = {
+var moonData = {
   "format": "png",
   "style": {
     "moonStyle": "default",
@@ -20,23 +20,59 @@ var origData = {
   }
 }
 
+// var starData =  {
+//     "style": "default",
+//     "observer": {
+//       "latitude": 43.65348,
+//       "longitude": -79.3839347,
+//       "date": currentDate
+//     },
+//     "view": {
+//         "type": "constellation",
+//         "parameters": {
+//           "constellation": "ori"
+//         }
+//     }
+// }
+
+var starData =  {
+    "observer": {
+      "latitude": 43.65348,
+      "longitude": -79.3839347,
+      "date": currentDate
+    },
+    "view": {
+        "type": "area",
+        "parameters": {
+            "position": {
+                "equatorial": {
+                    "rightAscension": 14.83,
+                    "declination": -15.23
+                }
+            },
+            "zoom": 2 
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
   
   const form = document.getElementById('moonForm');
   form.addEventListener('submit', handleSubmit);
-  //const userLocation = await getUserLocation();
-
-  // Update the observer parameters with the user's location
-  // origData.observer.latitude = userLocation.latitude.toFixed(5);
-  // origData.observer.longitude = userLocation.longitude.toFixed(5);
 
   var moonTonight = document.querySelector("#tonight-moon");
   var moonBox1 = document.createElement("div");
   moonTonight.appendChild(moonBox1);
   moonBox1.classList.add("moonBox");
-  await moonRequest(origData, moonBox1);
+  await moonRequest(moonData, moonBox1);
   
   await next5Nights(currentDate);
+
+  var starTonight = document.querySelector("#tonight-star");
+  var starContainer = document.createElement("div");
+  starTonight.appendChild(starContainer);
+  starContainer.classList.add("starContainer");
+  await starRequest(starData, starContainer);
     }
 );
 
@@ -61,25 +97,21 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 async function next5Nights(date) {
   const dateOffsets = [1, 2, 3, 4, 5];
-  
   const currentDate = new Date(date);
-  // Load moon phases for each date offset in order
+
   for (const offset of dateOffsets) {
     const nextDate = new Date(currentDate);
     
-    // Calculate the next date by adding the offset
     nextDate.setDate(nextDate.getDate() + offset);
 
-    // Update the observer's date in origData
-    origData.observer.date = nextDate.toISOString().split('T')[0];
+    moonData.observer.date = nextDate.toISOString().split('T')[0];
       
-      // Load moon phases for this date
       var moonForecast = document.querySelector("#moon-phase");
       var moonBox = document.createElement("div");
       moonForecast.appendChild(moonBox);
       moonBox.classList.add("moonBox");
 
-    await moonRequest(origData, moonBox);
+    await moonRequest(moonData, moonBox);
   }
 }
 
@@ -96,8 +128,8 @@ function getLatLon() {
       const latitude = parseFloat(response.data[0].lat);
       const longitude = parseFloat(response.data[0].lon);
 
-      origData.observer.latitude = latitude;
-      origData.observer.longitude = longitude;
+      moonData.observer.latitude = latitude;
+      moonData.observer.longitude = longitude;
 
 
     } catch (error) {
@@ -108,7 +140,7 @@ function getLatLon() {
 }
 
 function updateObserverDate(date) {
-  origData.observer.date = date;
+  moonData.observer.date = date;
 }
 
 function handleSubmit(event) {
@@ -122,7 +154,7 @@ function handleSubmit(event) {
   var moonBox1 = document.createElement("div");
   moonTonight.appendChild(moonBox1);
   moonBox1.classList.add("moonBox");
-  moonRequest(origData, moonBox1);
+  moonRequest(moonData, moonBox1);
   next5Nights(dateInput);
 }
 
@@ -150,7 +182,7 @@ const headers = new Headers({
 async function moonRequest(data, container) {
   const apiUrl = 'https://api.astronomyapi.com/api/v2/studio/moon-phase';
   const fetchOptions = {
-    method: 'POST', // HTTP method
+    method: 'POST', 
     headers: headers,
     body: JSON.stringify(data),
   };
@@ -167,6 +199,31 @@ async function moonRequest(data, container) {
     let moonPic = document.createElement("img");
     moonPic.src = responseData.data.imageUrl;
     container.appendChild(moonPic);
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function starRequest(data,container) {
+  const apiURL = 'https://api.astronomyapi.com/api/v2/studio/star-chart';
+  const fetchOptions = {
+    method: 'POST', 
+    headers: headers,
+    body: JSON.stringify(data),
+  };
+
+  try {
+    const response = await fetch(apiURL, fetchOptions);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    let starPic = document.createElement("img");
+    starPic.src = responseData.data.imageUrl;
+    container.appendChild(starPic);
 
   } catch (error) {
     console.error('Error:', error);
