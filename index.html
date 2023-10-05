@@ -3,29 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moon Phase App</title>
+    <title>Night Sky App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <div id="container">
-        <h1>The moon tonight</h1>
-        <div id="tonight-moon">
+        <div class="cloud">
+           <img src="giphy.gif" alt="cloud-animation">
+            <h1>Cloudy night?</h1>
         </div>
-        <h2>the next 5 nights:</h2>
-        <div id="moon-phase"></div>
-        <br>
-        <form id="moonForm">
-            <p>See the moon over your city</p>
+        <form class="form-inline" id="moonForm">
+            <h2>See the moon and stars over your city</h2>
+            <br>
             <fieldset>
-                <label>City</label>
-                <input id="city" type="text">
-                <label>Date</label>
-                <input id="date" type="date" required>
-                <br>
-                <button type="submit">Generate</button>
+                <div class="form-group">
+                    <label class="control-label col-sm-2">City&nbsp;&nbsp;&nbsp;</label>
+                    <input id="city" class="form-control" type="text">
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2">Date&nbsp;&nbsp;&nbsp;</label>
+                    <input id="date" class="form-control" type="date" required>
+                </div>
+                <button id="button" class="btn btn-lg" type="submit">Submit</button>
             </fieldset>
         </form>
+        <br>
+        <div id="tonight-moon"></div>
+        <h2> </h2>
+        <div id="tonight-star"></div>
+        <h2>Watch the moon change phases</h2>
+        <div id="moon-phase"></div>
+        <h2> </h2>
     </div>
     <script src="index.js"></script>
 </body>
