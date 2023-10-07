@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   moonBox1.classList.add("moonBox");
   await moonRequest(moonData, moonBox1);
   
-  await next5Nights(currentDate);
+  await next4Nights(currentDate);
 
   var starTonight = document.querySelector("#tonight-star");
   var starContainer = document.createElement("div");
@@ -95,9 +95,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 //   });
 // }
 
-async function next5Nights(date) {
-  const dateOffsets = [1, 2, 3, 4, 5];
-  const currentDate = new Date(date);
+async function next4Nights() {
+  const dateOffsets = [1, 2, 3, 4];
+  const currentDate = new Date();
 
   for (const offset of dateOffsets) {
     const nextDate = new Date(currentDate);
@@ -131,7 +131,6 @@ function getLatLon() {
       moonData.observer.latitude = latitude;
       moonData.observer.longitude = longitude;
 
-
     } catch (error) {
       console.error(error);
     }
@@ -139,14 +138,9 @@ function getLatLon() {
   getCoords();
 }
 
-function updateObserverDate(date) {
-  moonData.observer.date = date;
-}
 
 function handleSubmit(event) {
   event.preventDefault();
-  const dateInput = document.getElementById('date').value; 
-  updateObserverDate(dateInput); 
   resetMoonDisplay(); 
   getLatLon();
 
@@ -155,7 +149,7 @@ function handleSubmit(event) {
   moonTonight.appendChild(moonBox1);
   moonBox1.classList.add("moonBox");
   moonRequest(moonData, moonBox1);
-  next5Nights(dateInput);
+  next4Nights();
 }
 
 function resetMoonDisplay() {

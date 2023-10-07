@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap');
 #container {
     margin: auto;
     width: 50%;
-    background-color: rgb(14, 14, 48);
+    background-color: #04041af1;
 }
 
 h1, h2 {
@@ -10,7 +11,7 @@ h1, h2 {
 
 body {
     text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Manrope', sans-serif;
     color: white;
     background-image: url("cosmos.jpg");
 }
@@ -19,14 +20,17 @@ label {
     font-size: large;
 }
 .moonBox  {
-    width: 15rem;
-    height: 20rem;
-    border-color: #060631;
-    border-radius: 10px;
-    border-style: solid;
+    width: 20rem;
+    height: 25rem;
     display: flex;
-    margin: auto;
+    margin: 2% auto;
 } 
+
+.moonBox img {
+    height: auto;
+    border: 0;
+    border-radius: 10px;
+}
 
 #moon-phase {
     display: flex;
@@ -45,10 +49,16 @@ label {
     justify-content: space-evenly;
 }
 
-.starContainer img {
+.starContainer {
     display: flex;
-    width: 90%;
-    margin: 0% 5%;
+}
+
+.starContainer img {
+    border-radius: 20px;
+    display: flex;
+    width: 120%;
+    margin: 2% 5%;
+    justify-content: center;
 }
 
 #tonight-moon .moonBox {
@@ -64,40 +74,40 @@ label {
     font-family: Arial, Helvetica, sans-serif;   
 }
 
-.cloud-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
 .cloud {
-    position: absolute;
-    background: url('cloud.jpg') no-repeat;
-    animation: moveClouds 10s linear infinite; 
-    width: 50%; /* Adjust cloud size as needed */
-    height: 30%; /* Adjust cloud size as needed */
-    animation: moveClouds 20s linear infinite; /* Adjust animation duration as needed */
-    transform-origin: top left; 
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
 }
 
-@keyframes moveClouds {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
+.cloud img {
+    width: 23.0rem;
+    z-index: 3;
+} 
+
+.cloud h1 {
+    position: absolute;
+    z-index: 1;
+    color: #e1e1ea;
 }
 
 @media (max-width: 768px) {
 
+body {
+    line-height: 0.7;
+}
+
+h1, h2 {
+    font-size: medium;
+    margin: 5%;
+}
+
 #container {
     margin: auto;
-    width: 80%;
-    background-color: rgb(14, 14, 48);
+    width: 70%;
+    background-color: #0e0e30;
 }
     
 .moonBox  {
@@ -117,8 +127,38 @@ label {
 }
 
 #tonight-moon {
-    display: flex;
+    display: inline;
     flex-wrap: wrap;
     justify-content: space-evenly;
+}
+
+p {
+    margin: 2.0rem;
+}
+
+#button {
+    background-color: #a4a4bf;
+    color: #0b0b53;;
+    border-radius: 5px;
+    border-color: #a4a4bfda;
+    font-family: Arial, Helvetica, sans-serif;   
+    height: 3.0rem;
+    width: 6.0rem;
+    font-size: smaller;
+    text-align: center;
+    padding: 2%;
+    font-weight: bold;
+    margin-bottom: 1.0rem;
+}
+
+.form-control {
+    width: 15.0rem;
+    height: 3.0rem;
+    margin: auto;
+}
+
+label {
+    font-size: small;
+    padding: 3%;
 }
   }
