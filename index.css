@@ -19,6 +19,7 @@ body {
 label {
     font-size: large;
 }
+
 .moonBox  {
     width: 20rem;
     height: 25rem;
@@ -66,12 +67,16 @@ label {
 }
 
 #button {
-    /* background-color: #0b0b53; */
     background-color: #a4a4bf;
-    color: #0b0b53;;
+    color: #0b0b53;
     border-radius: 5px;
     border-color: #a4a4bf;
-    font-family: Arial, Helvetica, sans-serif;   
+    font-family: Arial, Helvetica, sans-serif;
+    margin-left: 10px;   
+}
+
+input#city.form-control {
+    height: 4rem;
 }
 
 .cloud {

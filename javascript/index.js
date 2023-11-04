@@ -1,4 +1,4 @@
-let currentDate = new Date();
+const currentDate = new Date();
 
 var moonData = {
   "format": "png",
@@ -20,21 +20,6 @@ var moonData = {
   }
 }
 
-// var starData =  {
-//     "style": "default",
-//     "observer": {
-//       "latitude": 43.65348,
-//       "longitude": -79.3839347,
-//       "date": currentDate
-//     },
-//     "view": {
-//         "type": "constellation",
-//         "parameters": {
-//           "constellation": "ori"
-//         }
-//     }
-// }
-
 var starData =  {
     "observer": {
       "latitude": 43.65348,
@@ -50,7 +35,7 @@ var starData =  {
                     "declination": -15.23
                 }
             },
-            "zoom": 2 
+            "zoom": 3 
         }
     }
 }
@@ -66,14 +51,15 @@ document.addEventListener('DOMContentLoaded', async function () {
   moonBox1.classList.add("moonBox");
   await moonRequest(moonData, moonBox1);
   
-  await next4Nights(currentDate);
+  await next4Nights();
 
   var starTonight = document.querySelector("#tonight-star");
   var starContainer = document.createElement("div");
   starTonight.appendChild(starContainer);
   starContainer.classList.add("starContainer");
   await starRequest(starData, starContainer);
-    }
+  }
+
 );
 
 // function getUserLocation() {
@@ -115,12 +101,11 @@ async function next4Nights() {
   }
 }
 
-function getLatLon() {
+async function getLatLon(data) {
   const locationInput = document.getElementById('city').value;
   const APIKey = "e4875d42d4bb143769832d3c52da81bf";
   var apiUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${locationInput}&limit=1&appid=${APIKey}`;
 
-  async function getCoords() {
     try {
       const response = await axios.get(apiUrl);
       console.log(response);
@@ -128,41 +113,62 @@ function getLatLon() {
       const latitude = parseFloat(response.data[0].lat);
       const longitude = parseFloat(response.data[0].lon);
 
-      moonData.observer.latitude = latitude;
-      moonData.observer.longitude = longitude;
+      data.observer.latitude = latitude;
+      data.observer.longitude = longitude;
 
     } catch (error) {
       console.error(error);
     }
-  }
-  getCoords();
 }
 
 
-function handleSubmit(event) {
+async function handleSubmit(event) {
   event.preventDefault();
   resetMoonDisplay(); 
-  getLatLon();
+  resetStarChart();
+
+  moonData.observer.date = currentDate;
+  starData.observer.date = currentDate;
+ 
+  console.log(starData.observer.latitude);
+  await getLatLon(moonData);
+  await getLatLon(starData);
+  console.log(starData.observer.latitude);
 
   var moonTonight = document.querySelector("#tonight-moon");
-  var moonBox1 = document.createElement("div");
-  moonTonight.appendChild(moonBox1);
-  moonBox1.classList.add("moonBox");
-  moonRequest(moonData, moonBox1);
+  var moonBox = document.createElement("div");
+  moonTonight.appendChild(moonBox);
+  moonBox.classList.add("moonBox");
+  moonRequest(moonData, moonBox);
+
   next4Nights();
+
+  var starTonight = document.querySelector("#tonight-star");
+  var starContainer = document.createElement("div");
+  starTonight.appendChild(starContainer);
+  starContainer.classList.add("starContainer");
+  starRequest(starData, starContainer);  
+
 }
 
 function resetMoonDisplay() {
   const moonPhaseContainer = document.querySelector('#moon-phase');
-  const moon1 = document.querySelector('#tonight-moon')
+  const moon = document.querySelector('#tonight-moon')
   while (moonPhaseContainer.firstChild) {
     moonPhaseContainer.removeChild(moonPhaseContainer.firstChild);
   }
-  while (moon1.firstChild) {
-    moon1.removeChild(moon1.firstChild);
+  while (moon.firstChild) {
+    moon.removeChild(moon.firstChild);
   }
 }
 
+function resetStarChart() {
+  const star = document.querySelector('#tonight-star');
+  while (star.firstChild) {
+    star.removeChild(star.firstChild);
+  }
+}
+ 
 const appID = "96b04335-8a59-44f3-80ba-5f79d6b5bdb2";
 const appSecret = "5fa633cf6abeb4329aeec9ac79b07f66e9c5ea082fcaff09ded32495f9ff10512aba0886f81c10bf5fe079c49ebb84590d9661437f5abcac83f9c102085e0e842b53dfa2531b0c75a4df71c307adafdf51e5bf532628459576f05438b93d40a27c85e0aaf2a83d2f559afd0a9d312297";
 const authString = btoa(`${appID}:${appSecret}`);
