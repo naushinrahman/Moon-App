@@ -1,12 +1,13 @@
 const express = require('express');
 const axios = require('axios');
-
+const path = require('path');
 const app = express();
-const port = 3000; // You can choose any port you like
+const port = 3000; 
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public')); // Serve static files from a 'public' directory
+app.use(express.static('public')); 
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html'); // Assuming your HTML file is in the same directory as your JS file
+  res.sendFile(path.join(__dirname + '/index.html')); 
 });
+
+app.listen(port, () => console.log(`server listening on: ${port}`));
