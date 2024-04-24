@@ -1,4 +1,4 @@
-#Night Sky App
+# Night Sky App
 ## Web page that shows the moon, moon phases over next 4 days and star chart of the user
 
 ## Features:
