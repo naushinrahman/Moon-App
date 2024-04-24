@@ -1,5 +1,11 @@
 const currentDate = new Date();
 
+var observerData = {
+  "latitude": 43.65348,
+  "longitude": -79.3839347,
+  "date": currentDate
+};
+
 var moonData = {
   "format": "png",
   "style": {
@@ -9,11 +15,7 @@ var moonData = {
       "headingColor": "black",
       "textColor": "white"
     },
-    "observer": {
-      "latitude": 43.65348,
-      "longitude": -79.3839347,
-      "date": currentDate
-  },
+    "observer": observerData,
   "view": {
     "type": "portrait-simple",
     "orientation": "north-up"
@@ -21,21 +23,17 @@ var moonData = {
 }
 
 var starData =  {
-    "observer": {
-      "latitude": 43.65348,
-      "longitude": -79.3839347,
-      "date": currentDate
-    },
+    "observer": observerData,
     "view": {
         "type": "area",
         "parameters": {
             "position": {
                 "equatorial": {
-                    "rightAscension": 14.83,
-                    "declination": -15.23
+                    "rightAscension": 15,
+                    "declination": -5
                 }
             },
-            "zoom": 3 
+            //"zoom": 
         }
     }
 }
@@ -58,28 +56,24 @@ document.addEventListener('DOMContentLoaded', async function () {
   starTonight.appendChild(starContainer);
   starContainer.classList.add("starContainer");
   await starRequest(starData, starContainer);
+
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      observerData.latitude = latitude;
+      observerData.longitude = longitude;
+
+    }, function(error) {
+      console.error("Error getting location:", error);
+    });
+  } else {
+    console.error("Geolocation is not supported by this browser.");
   }
 
-);
-
-// function getUserLocation() {
-//   return new Promise((resolve, reject) => {
-//     if ("geolocation" in navigator) {
-//       navigator.geolocation.getCurrentPosition(
-//         (position) => {
-//           const latitude = position.coords.latitude;
-//           const longitude = position.coords.longitude;
-//           resolve({ latitude, longitude });
-//         },
-//         (error) => {
-//           reject(error);
-//         }
-//       );
-//     } else {
-//       reject(new Error("Geolocation is not available in this browser."));
-//     }
-//   });
-// }
+});
 
 async function next4Nights() {
   const dateOffsets = [1, 2, 3, 4];
@@ -126,9 +120,6 @@ async function handleSubmit(event) {
   event.preventDefault();
   resetMoonDisplay(); 
   resetStarChart();
-
-  moonData.observer.date = currentDate;
-  starData.observer.date = currentDate;
  
   console.log(starData.observer.latitude);
   await getLatLon(moonData);
@@ -229,3 +220,4 @@ async function starRequest(data,container) {
     console.error('Error:', error);
   }
 }
+
